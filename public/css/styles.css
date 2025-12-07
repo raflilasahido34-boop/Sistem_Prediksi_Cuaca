@@ -1,0 +1,257 @@
+body {
+    box-sizing: border-box;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+    width: 100%;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    overflow-x: hidden;
+}
+
+.app-container {
+    min-height: 100%;
+    width: 100%;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.header {
+    text-align: center;
+    color: white;
+    margin-bottom: 1rem;
+}
+
+.app-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.location {
+    font-size: 1.25rem;
+    opacity: 0.95;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.main-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    flex: 1;
+}
+
+.weather-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 1.5rem;
+    padding: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.current-weather {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.weather-main {
+    text-align: center;
+}
+
+.weather-icon {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+}
+
+.temperature {
+    font-size: 4rem;
+    font-weight: 700;
+    color: #667eea;
+    margin-bottom: 0.5rem;
+}
+
+.condition {
+    font-size: 1.5rem;
+    color: #4a5568;
+    font-weight: 500;
+}
+
+.weather-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.detail-item {
+    background: #f7fafc;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.detail-label {
+    font-size: 0.875rem;
+    color: #718096;
+    font-weight: 500;
+}
+
+.detail-value {
+    font-size: 1.5rem;
+    color: #2d3748;
+    font-weight: 600;
+}
+
+.prediction-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.panel-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 0.5rem;
+}
+
+.decision-tree {
+    background: #f7fafc;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    position: relative;
+    overflow-x: auto;
+}
+
+.tree-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    min-width: 100%;
+}
+
+.tree-node {
+    background: white;
+    border: 2px solid #667eea;
+    border-radius: 0.5rem;
+    padding: 1rem 1.5rem;
+    position: relative;
+    min-width: 180px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+}
+
+.tree-node.root {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    font-weight: 700;
+}
+
+.tree-level {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.tree-branch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.branch-line {
+    width: 2px;
+    height: 30px;
+    background: #cbd5e0;
+}
+
+.branch-label {
+    font-size: 0.75rem;
+    color: #667eea;
+    font-weight: 600;
+    background: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    border: 1px solid #667eea;
+}
+
+.leaf-node {
+    background: linear-gradient(135deg, #48bb78, #38a169);
+    color: white;
+    border-color: #48bb78;
+    font-weight: 600;
+}
+
+.prediction-result {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    text-align: center;
+}
+
+.result-title {
+    font-size: 1rem;
+    opacity: 0.9;
+    margin-bottom: 0.5rem;
+}
+
+.result-value {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.footer {
+    text-align: center;
+    color: white;
+    padding: 1rem;
+    font-size: 0.875rem;
+    opacity: 0.9;
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        grid-template-columns: 1fr;
+    }
+
+    .app-title {
+        font-size: 2rem;
+    }
+
+    .temperature {
+        font-size: 3rem;
+    }
+
+    .tree-level {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+
+@view-transition {
+    navigation: auto;
+}
