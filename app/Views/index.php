@@ -11,9 +11,28 @@
 
 <body class="bg-gradient-to-b from-blue-100 to-blue-200 min-h-screen p-4">
     <div class="w-full max-w-7xl mx-auto px-4 bg-white shadow-2xl rounded-3xl overflow-hidden border border-blue-300">
-        <header class="p-6 bg-blue-600 text-white text-center shadow-md">
-            <h1 class="text-3xl font-bold" id="appTitle">Gorontalo Weather</h1>
-            <div class="flex justify-center items-center gap-2 mt-2 text-lg">
+
+        <!-- NAVBAR WITH LOGIN/REGISTER -->
+        <nav class="flex justify-between items-center px-6 py-4 bg-blue-600 text-white shadow-md">
+            <h1 class="text-2xl font-bold">Gorontalo Weather</h1>
+
+            <!-- If user not logged in -->
+            <div class="flex items-center gap-3" id="authButtons">
+                <a href="<?= base_url('/login') ?>" class="px-4 py-1 bg-white text-blue-600 font-semibold rounded-lg shadow hover:bg-gray-200 transition">Login</a>
+                <a href="<?= base_url('/register') ?>" class="px-4 py-1 bg-blue-800 text-white font-semibold rounded-lg shadow hover:bg-blue-900 transition">Register</a>
+            </div>
+
+            <!-- When user IS logged in -->
+            <div class="hidden items-center gap-4" id="userProfile">
+                <form method="get" action="<?= base_url('/logout') ?>">
+                    <button class="px-4 py-1 bg-red-500 text-white rounded-lg shadow hover:bg-red-600 transition">Logout</button>
+                </form>
+            </div>
+        </nav>
+
+        <!-- HEADER LOCATION -->
+        <header class="p-6 bg-blue-600 text-white text-center shadow-md mt-2 rounded-2xl">
+            <div class="flex justify-center items-center gap-2 text-lg">
                 <span>📍</span>
                 <span id="locationName">Gorontalo, Indonesia</span>
             </div>
@@ -63,9 +82,13 @@
             </div>
         </main>
 
-        <!-- Input Form -->
+        <!-- Input Form (Only for logged-in users) -->
         <section class="px-6 pb-6">
-            <div class="p-6 bg-white rounded-2xl shadow grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="p-6 bg-white rounded-2xl shadow grid grid-cols-1 md:grid-cols-3 gap-6 opacity-50 pointer-events-none" id="inputFormWrapper">
+                <div class="md:col-span-3 text-center mb-4 hidden" id="loginReminder">
+                    <p class="bg-yellow-200 py-2 px-4 rounded-lg text-yellow-800 font-semibold shadow">Login untuk menggunakan fitur prediksi cuaca.</p>
+                </div>
+
                 <div>
                     <label class="font-semibold">Suhu Rata-Rata (tavg)</label>
                     <input id="tavg" type="number" value="27" step="0.1" class="mt-1 w-full p-2 rounded-lg border focus:ring-2 focus:ring-blue-400" />
@@ -76,8 +99,7 @@
                 </div>
                 <div>
                     <label class="font-semibold">Suhu Maksimum (tmax)</label>
-                    <input id="tmax" type="number" value="32" step="0.1"
-                        class="mt-1 w-full p-2 rounded-lg border focus:ring-2 focus:ring-blue-400" />
+                    <input id="tmax" type="number" value="32" step="0.1" class="mt-1 w-full p-2 rounded-lg border focus:ring-2 focus:ring-blue-400" />
                 </div>
                 <div>
                     <label class="font-semibold">Kecepatan Angin (wspd)</label>
@@ -95,6 +117,7 @@
                     <label class="font-semibold">Tekanan (pressure)</label>
                     <input id="pressure" type="number" value="1013" step="0.1" class="mt-1 w-full p-2 rounded-lg border focus:ring-2 focus:ring-blue-400" />
                 </div>
+
                 <div class="md:col-span-3 text-center">
                     <button type="button" id="predictBtn" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl shadow-lg transition">Prediksi</button>
                 </div>
@@ -105,6 +128,22 @@
             <p id="footerText">Data updated every 30 minutes • Powered by C4.5 Decision Tree Algorithm</p>
         </footer>
     </div>
+
+    <script>
+        // Toggle UI states based on login session
+        const isLoggedIn = <?= session()->get('user_id') ? 'true' : 'false' ?>;
+
+        if (isLoggedIn) {
+            document.getElementById('authButtons').classList.add('hidden');
+            document.getElementById('userProfile').classList.remove('hidden');
+            document.getElementById('inputFormWrapper').classList.remove('opacity-50', 'pointer-events-none');
+            document.getElementById('loginReminder').classList.add('hidden');
+        } else {
+            document.getElementById('authButtons').classList.remove('hidden');
+            document.getElementById('userProfile').classList.add('hidden');
+            document.getElementById('loginReminder').classList.remove('hidden');
+        }
+    </script>
 
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="<?= base_url('/js/script.js') ?>" defer></script>
