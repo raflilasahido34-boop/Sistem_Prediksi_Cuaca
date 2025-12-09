@@ -31,19 +31,19 @@
                 <div class="mt-6 grid grid-cols-2 gap-4 text-sm">
                     <div class="p-3 bg-white rounded-xl shadow text-center">
                         <p class="font-semibold">Humidity</p>
-                        <p id="humidity">75%</p>
+                        <p id="card_humidity">75%</p>
                     </div>
                     <div class="p-3 bg-white rounded-xl shadow text-center">
                         <p class="font-semibold">Wind Speed</p>
-                        <p id="windSpeed">12 km/h</p>
+                        <p id="card_windSpeed">12 km/h</p>
                     </div>
                     <div class="p-3 bg-white rounded-xl shadow text-center">
                         <p class="font-semibold">Pressure</p>
-                        <p>1013 hPa</p>
+                        <p id="card_pressure">1013 hPa</p>
                     </div>
                     <div class="p-3 bg-white rounded-xl shadow text-center">
                         <p class="font-semibold">Visibility</p>
-                        <p>10 km</p>
+                        <p id="card_visibility">10 km</p>
                     </div>
                 </div>
             </div>
@@ -82,6 +82,18 @@
                 <div>
                     <label class="font-semibold">Kecepatan Angin (wspd)</label>
                     <input id="wspd" type="number" value="18" step="0.1" class="mt-1 w-full p-2 rounded-lg border focus:ring-2 focus:ring-blue-400" />
+                </div>
+                <div>
+                    <label class="font-semibold">Kelembaban (rhum)</label>
+                    <input id="rhum" type="number" value="75" step="0.1" class="mt-1 w-full p-2 rounded-lg border focus:ring-2 focus:ring-blue-400" />
+                </div>
+                <div>
+                    <label class="font-semibold">Visibilitas (visibility)</label>
+                    <input id="visibility" type="number" value="10" step="0.1" class="mt-1 w-full p-2 rounded-lg border focus:ring-2 focus:ring-blue-400" />
+                </div>
+                <div>
+                    <label class="font-semibold">Tekanan (pressure)</label>
+                    <input id="pressure" type="number" value="1013" step="0.1" class="mt-1 w-full p-2 rounded-lg border focus:ring-2 focus:ring-blue-400" />
                 </div>
                 <div class="md:col-span-3 text-center">
                     <button type="button" id="predictBtn" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl shadow-lg transition">Prediksi</button>

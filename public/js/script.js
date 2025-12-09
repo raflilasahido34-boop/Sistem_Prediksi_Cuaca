@@ -270,19 +270,50 @@ function predictFromTree(tree, input) {
    UI updates for weather card
    ------------------------- */
 function updateWeatherCard(input, result) {
-    // main temperature element in the improved HTML is #temperature
-    if (input && input.tavg !== undefined && !isNaN(input.tavg)) {
-        document.getElementById("temperature").innerText = `${input.tavg}°C`;
+    // temperature
+    const tempEl = document.getElementById("temperature");
+    if (tempEl && !isNaN(input.tavg)) {
+        tempEl.innerText = `${input.tavg}°C`;
     }
-    // condition text - combine tmin + wspd nicely
-    const condEl = document.getElementById("weatherCondition");
+
+    // condition (tmin + wind)
+    const condEl = document.getElementById("card_condition");
     if (condEl) {
         condEl.innerText = `min ${input.tmin}°C • wind ${input.wspd} km/h`;
     }
 
+    // humidity
+    const rhum = parseFloat(document.getElementById("rhum")?.value);
+    const humEl = document.getElementById("card_humidity");
+    if (humEl && !isNaN(rhum)) {
+        humEl.innerText = `${rhum}%`;
+    }
+
+    // wind
+    const windEl = document.getElementById("card_windSpeed");
+    if (windEl) {
+        windEl.innerText = `${input.wspd} km/h`;
+    }
+
+    // visibility
+    const vis = parseFloat(document.getElementById("visibility")?.value);
+    const visEl = document.getElementById("card_visibility");
+    if (visEl && !isNaN(vis)) {
+        visEl.innerText = `${vis} km`;
+    }
+
+    // pressure
+    const pres = parseFloat(document.getElementById("pressure")?.value);
+    const presEl = document.getElementById("card_pressure");
+    if (presEl && !isNaN(pres)) {
+        presEl.innerText = `${pres} hPa`;
+    }
+
+    // prediction
     const predEl = document.getElementById("prediksi_result");
     if (predEl) predEl.innerText = result;
 }
+
 
 /* -------------------------
    Load tree.json and initialize everything
