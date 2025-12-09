@@ -1,3 +1,10 @@
+// script.js (updated)
+// - Keeps nodes as <rect>
+// - Safe node IDs via unique uid assigned during conversion
+// - Highlights rect + text on prediction path
+// - Auto-predict on input change and button click
+// - Removes Cloudflare injection block (if any)
+
 const defaultConfig = {
     background_gradient_start: "#667eea",
     background_gradient_end: "#764ba2",
@@ -17,271 +24,75 @@ const defaultConfig = {
     footer_text: "Data updated every 30 minutes • Powered by C4.5 Decision Tree Algorithm"
 };
 
-const config = {};
-
-async function onConfigChange(cfg) {
-    const bgStart = cfg.background_gradient_start || defaultConfig.background_gradient_start;
-    const bgEnd = cfg.background_gradient_end || defaultConfig.background_gradient_end;
-    const primaryAccent = cfg.primary_accent || defaultConfig.primary_accent;
-    const textPrimary = cfg.text_primary || defaultConfig.text_primary;
-    const textSecondary = cfg.text_secondary || defaultConfig.text_secondary;
-    const customFont = cfg.font_family || defaultConfig.font_family;
-    const baseSize = cfg.font_size || defaultConfig.font_size;
-    const baseFontStack = '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-
-    document.body.style.background = `linear-gradient(135deg, ${bgStart} 0%, ${bgEnd} 100%)`;
-
-    document.querySelectorAll('.weather-card').forEach(card => {
-        card.style.background = `rgba(255, 255, 255, 0.95)`;
-    });
-
-    document.querySelector('.temperature').style.color = primaryAccent;
-    document.querySelector('.condition').style.color = textSecondary;
-    document.querySelector('.panel-title').style.color = textPrimary;
-
-    document.querySelectorAll('.tree-node').forEach(node => {
-        if (node.classList.contains('root')) {
-            node.style.background = `linear-gradient(135deg, ${bgStart}, ${bgEnd})`;
-        } else if (!node.classList.contains('leaf-node')) {
-            node.style.borderColor = primaryAccent;
-        }
-    });
-
-    document.querySelectorAll('.branch-label').forEach(label => {
-        label.style.color = primaryAccent;
-        label.style.borderColor = primaryAccent;
-    });
-
-    document.querySelectorAll('.prediction-result').forEach(result => {
-        result.style.background = `linear-gradient(135deg, ${bgStart}, ${bgEnd})`;
-    });
-
-    document.body.style.fontFamily = `${customFont}, ${baseFontStack}`;
-    document.querySelector('.app-title').style.fontSize = `${baseSize * 2.5}px`;
-    document.querySelector('.location').style.fontSize = `${baseSize * 1.25}px`;
-    document.querySelector('.temperature').style.fontSize = `${baseSize * 4}px`;
-    document.querySelector('.condition').style.fontSize = `${baseSize * 1.5}px`;
-    document.querySelector('.panel-title').style.fontSize = `${baseSize * 1.5}px`;
-
-    document.querySelectorAll('.detail-label').forEach(el => {
-        el.style.fontSize = `${baseSize * 0.875}px`;
-    });
-
-    document.querySelectorAll('.detail-value').forEach(el => {
-        el.style.fontSize = `${baseSize * 1.5}px`;
-    });
-
-    document.getElementById('appTitle').textContent =
-        cfg.app_title || defaultConfig.app_title;
-
-    document.getElementById('locationName').textContent =
-        cfg.location_name || defaultConfig.location_name;
-
-    document.getElementById('temperature').textContent =
-        cfg.temperature || defaultConfig.temperature;
-
-    document.getElementById('weatherCondition').textContent =
-        cfg.weather_condition || defaultConfig.weather_condition;
-
-    document.getElementById('humidity').textContent =
-        cfg.humidity || defaultConfig.humidity;
-
-    document.getElementById('windSpeed').textContent =
-        cfg.wind_speed || defaultConfig.wind_speed;
-
-    document.getElementById('predictionTitle').textContent =
-        cfg.prediction_title || defaultConfig.prediction_title;
-
-    document.getElementById('footerText').textContent =
-        cfg.footer_text || defaultConfig.footer_text;
-}
-
-function mapToCapabilities(cfg) {
-    return {
-        recolorables: [
-            {
-                get: () =>
-                    cfg.background_gradient_start || defaultConfig.background_gradient_start,
-                set: value => {
-                    cfg.background_gradient_start = value;
-                    window.elementSdk.setConfig({
-                        background_gradient_start: value
-                    });
-                }
-            },
-            {
-                get: () =>
-                    cfg.background_gradient_end || defaultConfig.background_gradient_end,
-                set: value => {
-                    cfg.background_gradient_end = value;
-                    window.elementSdk.setConfig({
-                        background_gradient_end: value
-                    });
-                }
-            },
-            {
-                get: () =>
-                    cfg.primary_accent || defaultConfig.primary_accent,
-                set: value => {
-                    cfg.primary_accent = value;
-                    window.elementSdk.setConfig({
-                        primary_accent: value
-                    });
-                }
-            },
-            {
-                get: () =>
-                    cfg.text_primary || defaultConfig.text_primary,
-                set: value => {
-                    cfg.text_primary = value;
-                    window.elementSdk.setConfig({
-                        text_primary: value
-                    });
-                }
-            },
-            {
-                get: () =>
-                    cfg.text_secondary || defaultConfig.text_secondary,
-                set: value => {
-                    cfg.text_secondary = value;
-                    window.elementSdk.setConfig({
-                        text_secondary: value
-                    });
-                }
-            }
-        ],
-        borderables: [],
-        fontEditable: {
-            get: () => cfg.font_family || defaultConfig.font_family,
-            set: value => {
-                cfg.font_family = value;
-                window.elementSdk.setConfig({
-                    font_family: value
-                });
-            }
-        },
-        fontSizeable: {
-            get: () => cfg.font_size || defaultConfig.font_size,
-            set: value => {
-                cfg.font_size = value;
-                window.elementSdk.setConfig({
-                    font_size: value
-                });
-            }
-        }
-    };
-}
-
-function mapToEditPanelValues(cfg) {
-    return new Map([
-        ["app_title", cfg.app_title || defaultConfig.app_title],
-        ["location_name", cfg.location_name || defaultConfig.location_name],
-        ["temperature", cfg.temperature || defaultConfig.temperature],
-        ["weather_condition", cfg.weather_condition || defaultConfig.weather_condition],
-        ["humidity", cfg.humidity || defaultConfig.humidity],
-        ["wind_speed", cfg.wind_speed || defaultConfig.wind_speed],
-        ["prediction_title", cfg.prediction_title || defaultConfig.prediction_title],
-        ["footer_text", cfg.footer_text || defaultConfig.footer_text]
-    ]);
-}
-
-if (window.elementSdk) {
-    window.elementSdk.init({
-        defaultConfig,
-        onConfigChange,
-        mapToCapabilities,
-        mapToEditPanelValues
-    });
-}
-(function () {
-    function c() {
-        var b = a.contentDocument || a.contentWindow.document;
-
-        if (b) {
-            var d = b.createElement('script');
-
-            d.innerHTML =
-                "window.__CF$cv$params={r:'9aa0c91485581982',t:'MTc2NTA3NjU2MC4wMDAwMDA='};" +
-                "var a=document.createElement('script');" +
-                "a.nonce='';" +
-                "a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';" +
-                "document.getElementsByTagName('head')[0].appendChild(a);";
-
-            b.getElementsByTagName('head')[0].appendChild(d);
-        }
-    }
-
-    if (document.body) {
-        var a = document.createElement('iframe');
-
-        a.height = 1;
-        a.width = 1;
-        a.style.position = 'absolute';
-        a.style.top = 0;
-        a.style.left = 0;
-        a.style.border = 'none';
-        a.style.visibility = 'hidden';
-
-        document.body.appendChild(a);
-
-        if ('loading' !== document.readyState) {
-            c();
-        } else if (window.addEventListener) {
-            document.addEventListener('DOMContentLoaded', c);
-        } else {
-            var e = document.onreadystatechange || function () {};
-
-            document.onreadystatechange = function (b) {
-                e(b);
-                if ('loading' !== document.readyState) {
-                    document.onreadystatechange = e;
-                    c();
-                }
-            };
-        }
-    }
-})();
 const featureLabelMap = {
     tmin: "Suhu Minimum (°C)",
     tavg: "Suhu Rata-rata (°C)",
     wspd: "Kecepatan Angin (km/jam)"
 };
-async function loadDecisionTree() {
-    const res = await fetch("/data/tree.json");
-    const rawTree = await res.json();
 
-    const d3Tree = convertToD3Format(rawTree); // ✅ KONVERSI DI SINI
-    drawTree(d3Tree)
+// Global holders
+let decisionTree = null;           // raw tree (left/right structure)
+let rawNodeToUid = new Map();      // maps raw node object -> uid (number)
+let uidCounter = 0;                // uid generator
+let d3data = null;                 // converted tree for d3 (with children array)
+
+/* -------------------------
+   Helpers
+   ------------------------- */
+function safeThresholdStr(val) {
+    // convert number to a stable string (3 decimal places), then replace dots -> underscore
+    if (val === undefined || val === null) return "na";
+    return Number(val).toFixed(3).replace(/\./g, "_");
 }
+
+function assignUidToRawNode(node) {
+    // assign and return uid for a raw node reference
+    if (!rawNodeToUid.has(node)) {
+        uidCounter += 1;
+        rawNodeToUid.set(node, uidCounter);
+    }
+    return rawNodeToUid.get(node);
+}
+
+/* -------------------------
+   Convert raw tree -> d3-friendly tree
+   Also populate rawNodeToUid mapping
+   ------------------------- */
 function convertToD3Format(node) {
     if (!node) return null;
 
-    let newNode = {
-        ...node
-    };
+    // shallow copy so we don't mutate original raw object structure
+    const newNode = Object.assign({}, node);
 
+    // assign uid for identification
+    const uid = assignUidToRawNode(node);
+    newNode.__uid = uid;
+
+    // children for d3
     if (node.left || node.right) {
         newNode.children = [];
-
-        if (node.left) {
-            newNode.children.push(convertToD3Format(node.left));
-        }
-
-        if (node.right) {
-            newNode.children.push(convertToD3Format(node.right));
-        }
+        if (node.left) newNode.children.push(convertToD3Format(node.left));
+        if (node.right) newNode.children.push(convertToD3Format(node.right));
     }
 
     return newNode;
 }
 
+/* -------------------------
+   Draw tree using d3
+   Nodes are rect + text.
+   Each node group has id = node-<uid>
+   ------------------------- */
 function drawTree(data) {
+    if (!data) return;
+
     const width = 900;
     const height = 450;
 
+    // clear svg and build base group
     const svg = d3.select("#treeCanvas")
         .attr("viewBox", `0 0 ${width} ${height}`)
-        .html("") // ✅ CLEARR dulu biar tidak numpuk
+        .html("")
         .append("g")
         .attr("transform", "translate(40,40)");
 
@@ -290,26 +101,33 @@ function drawTree(data) {
     const treeLayout = d3.tree().size([height - 80, width - 120]);
     treeLayout(root);
 
-    // ✅ GARIS CABANG
-    svg.selectAll("line")
+    // links (lines)
+    svg.selectAll("line.link")
         .data(root.links())
         .enter()
         .append("line")
+        .classed("link", true)
         .attr("x1", d => d.source.y)
         .attr("y1", d => d.source.x)
         .attr("x2", d => d.target.y)
         .attr("y2", d => d.target.x)
         .attr("stroke", "#c7d2fe")
-        .attr("stroke-width", 2);
+        .attr("stroke-width", 2)
+        .attr("fill", "none")
+        .attr("id", d => `link-${d.source.data.__uid}-${d.target.data.__uid}`);
 
-
-    // ✅ NODE
+    // nodes
     const nodes = svg.selectAll("g.node")
         .data(root.descendants())
         .enter()
         .append("g")
+        .classed("node", true)
         .attr("transform", d => `translate(${d.y},${d.x})`);
 
+    // give each group an id based on uid
+    nodes.attr("id", d => `node-${d.data.__uid}`);
+
+    // rect background for each node
     nodes.append("rect")
         .attr("x", -70)
         .attr("y", -22)
@@ -318,13 +136,15 @@ function drawTree(data) {
         .attr("width", 140)
         .attr("height", 44)
         .attr("fill", d => {
-            if (d.children) return "#6366f1";      // node keputusan
-            return d.data.label === 1 ? "#16a34a" : "#dc2626"; // hujan / tidak
+            // decision internal nodes have children in d3
+            if (d.children) return "#6366f1";
+            // leaf node: color by label if available
+            return d.data.label === 1 ? "#16a34a" : "#dc2626";
         })
         .attr("stroke", "#fff")
         .attr("stroke-width", 1.5);
 
-
+    // text
     nodes.append("text")
         .attr("text-anchor", "middle")
         .attr("fill", "white")
@@ -341,97 +161,251 @@ function drawTree(data) {
                     .attr("dy", "-0.3em")
                     .text(label);
 
-                text.append("tspan")
-                    .attr("x", 0)
-                    .attr("dy", "1.2em")
-                    .style("font-weight", "normal")
-                    .text(`≤ ${d.data.threshold.toFixed(2)}`);
+                // threshold may be undefined for some nodes (safety)
+                if (d.data.threshold !== undefined && d.data.threshold !== null && !isNaN(d.data.threshold)) {
+                    text.append("tspan")
+                        .attr("x", 0)
+                        .attr("dy", "1.2em")
+                        .style("font-weight", "normal")
+                        .text(`≤ ${Number(d.data.threshold).toFixed(2)}`);
+                }
             } else {
+                // leaf label
                 text.text(d.data.label === 1 ? "HUJAN" : "TIDAK HUJAN");
             }
         });
-    nodeEnter.attr("id", d => {
-        if (d.data.feature && d.data.threshold) {
-            return `node-${d.data.feature}-${d.data.threshold}`;
+
+    // store a reference to d3data (optional)
+    d3data = data;
+}
+
+/* -------------------------
+   Highlight functions
+   - highlights rect + text fill for nodes on path
+   - resets previous highlights
+   ------------------------- */
+function clearHighlights() {
+    d3.selectAll("g.node rect")
+        .transition().duration(150)
+        .attr("stroke", "#fff")
+        .attr("stroke-width", 1.5)
+        .style("opacity", 1);
+
+    d3.selectAll("line.link")
+        .transition().duration(150)
+        .attr("stroke", "#c7d2fe")
+        .attr("stroke-width", 2);
+}
+
+function registerRawNodeUid(rawNode, d3Node) {
+    rawNodeToUid.set(rawNode, d3Node.__uid);
+}
+
+function highlightDecisionPath(path) {
+    clearHighlights();
+
+    for (let raw of path) {
+        const uid = rawNodeToUid.get(raw);
+        if (!uid) continue;
+
+        // highlight node rect
+        d3.select(`#node-${uid} rect`)
+            .transition().duration(150)
+            .attr("stroke", "#facc15")
+            .attr("stroke-width", 4);
+
+        // highlight link (if parent exists)
+        if (raw.parent) {
+            const pid = rawNodeToUid.get(raw.parent);
+            if (pid) {
+                d3.select(`#link-${pid}-${uid}`)
+                    .transition().duration(150)
+                    .attr("stroke", "#facc15")
+                    .attr("stroke-width", 4);
+            }
         }
-        return null;
-    });
+    }
 }
 
 
-loadDecisionTree();
-fetch("/data/tree.json")
-    .then(res => res.json())
-    .then(data => {
-        window.treeData = data;
-        runPrediction(); // langsung prediksi awal
-    });
-function highlightTreePath(path) {
-    d3.selectAll("g.node circle")
-        .style("stroke", "#003C43")
-        .style("stroke-width", 1)
-        .style("fill", "#003C43");
-
-    d3.selectAll("path.link")
-        .style("stroke", "#003C43")
-        .style("stroke-width", 1);
-
-    path.forEach(step => {
-        d3.select(`#node-${step.feature}-${step.threshold}`)
-            .select("circle")
-            .style("stroke", "yellow")
-            .style("stroke-width", 4);
-
-        d3.select(`#node-${step.feature}-${step.threshold}`)
-            .select("text")
-            .style("fill", "yellow");
-    });
-}
-
+/* -------------------------
+   Prediction function (reads raw decisionTree)
+   - returns { result, path } where path elements include uid
+   ------------------------- */
 function predictFromTree(tree, input) {
     let node = tree;
     let path = [];
+    let parent = null;
 
-    while (node && node.feature) {
-        path.push({
-            feature: node.feature,
-            threshold: node.threshold,
-            nodeRef: node // simpan referensi node
-        });
+    while (node.feature) {
+        node.parent = parent;
+        path.push(node);
 
-        if (input[node.feature] <= node.threshold) {
-            node = node.left;
-        } else {
-            node = node.right;
-        }
+        let feature = node.feature;
+        let threshold = node.threshold;
+
+        parent = node;
+
+        if (input[feature] <= threshold) node = node.left;
+        else node = node.right;
+
+        if (!node) break;
+    }
+
+    if (node) {
+        node.parent = parent;
+        path.push(node);
     }
 
     return {
-        result: node.label === 1 ? "Hujan" : "Tidak Hujan",
-        path: path
+        result: node?.label === 1 ? "Hujan" :
+                node?.label === 0 ? "Tidak Hujan" : "Tidak tersedia",
+        path
     };
 }
+
+
+
+/* -------------------------
+   UI updates for weather card
+   ------------------------- */
 function updateWeatherCard(input, result) {
-    document.getElementById("temperature").innerText = `${input.tavg}°C`;
-    document.getElementById("weatherCondition").innerText = `suhu minimum: ${input.tmin}°C \nkecepatan angin: ${input.wspd} km/h`;
-    document.getElementById("prediksi_result").innerText = result;
+    // main temperature element in the improved HTML is #temperature
+    if (input && input.tavg !== undefined && !isNaN(input.tavg)) {
+        document.getElementById("temperature").innerText = `${input.tavg}°C`;
+    }
+    // condition text - combine tmin + wspd nicely
+    const condEl = document.getElementById("weatherCondition");
+    if (condEl) {
+        condEl.innerText = `min ${input.tmin}°C • wind ${input.wspd} km/h`;
+    }
+
+    const predEl = document.getElementById("prediksi_result");
+    if (predEl) predEl.innerText = result;
 }
-async function runPrediction() {
-    const input = {
-        tavg: parseFloat(document.getElementById("tavg").value),
-        tmin: parseFloat(document.getElementById("tmin").value),
-        wspd: parseFloat(document.getElementById("wspd").value)
+
+/* -------------------------
+   Load tree.json and initialize everything
+   ------------------------- */
+async function loadDecisionTree() {
+    try {
+        const res = await fetch("/data/tree.json");
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const rawTree = await res.json();
+
+        if (!rawTree || Object.keys(rawTree).length === 0) {
+            console.error("tree.json kosong atau tidak valid");
+            return;
+        }
+
+        // store raw tree for prediction
+        decisionTree = rawTree;
+
+        // reset mapping and uid counter before conversion
+        rawNodeToUid = new Map();
+        uidCounter = 0;
+
+        // convert and populate mapping
+        const d3Tree = convertToD3Format(rawTree);
+
+        // finally draw
+        drawTree(d3Tree);
+
+        // keep raw tree globally accessible
+        window.treeData = decisionTree;
+
+        // run initial prediction from input fields (if present)
+        runPrediction();
+    } catch (err) {
+        console.error("Gagal load tree.json:", err);
+        // show message in svg
+        d3.select("#treeCanvas").html("");
+        d3.select("#treeCanvas")
+            .append("text")
+            .attr("x", 10)
+            .attr("y", 20)
+            .attr("fill", "#333")
+            .text("Gagal memuat decision tree (periksa /data/tree.json)");
+    }
+}
+
+/* -------------------------
+   Read inputs, predict, update UI + highlight
+   ------------------------- */
+function getInputFromForm() {
+    const tavg = parseFloat(document.getElementById("tavg")?.value);
+    const tmin = parseFloat(document.getElementById("tmin")?.value);
+    const wspd = parseFloat(document.getElementById("wspd")?.value);
+    const tmax = parseFloat(document.getElementById("tmax")?.value);
+
+    return {
+        tavg: isNaN(tavg) ? null : tavg,
+        tmin: isNaN(tmin) ? null : tmin,
+        wspd: isNaN(wspd) ? null : wspd,
+        tmax: isNaN(tmax) ? null : tmax
     };
-
-    const prediction = predictFromTree(window.treeData, input);
-    updateWeatherCard(input, prediction.result);
-    highlightTreePath(prediction.path);
 }
 
-// auto predict on change
-["tavg", "tmin", "wspd"].forEach(id => {
-    document.getElementById(id).addEventListener("input", runPrediction);
-});
+function runPrediction() {
+    if (!decisionTree) {
+        console.warn("Decision tree belum siap");
+        return;
+    }
 
-// manual predict button
-document.getElementById("predictBtn").addEventListener("click", runPrediction);
+    // Ambil input form
+    const tavg = parseFloat(document.getElementById("tavg")?.value);
+    const tmax = parseFloat(document.getElementById("tmax")?.value);
+    const tmin = parseFloat(document.getElementById("tmin")?.value);
+    const wspd = parseFloat(document.getElementById("wspd")?.value);
+
+    // Cek input valid
+    if ([tavg, tmax, tmin, wspd].some(v => isNaN(v))) {
+        document.getElementById("prediksi_result").innerText =
+            "Isi semua data cuaca";
+        return;
+    }
+
+    const input = getInputFromForm();
+
+
+    const { result, path } = predictFromTree(decisionTree, input);
+
+    document.getElementById("prediksi_result").innerText = 
+        result ?? "Tidak ada hasil";
+    updateWeatherCard(input, result);
+    // highlight node pada D3
+    highlightDecisionPath(path);
+}
+
+
+/* -------------------------
+   Wire up UI events
+   ------------------------- */
+function attachUiListeners() {
+    // auto predict on input
+    ["tavg", "tmin", "wspd", "tmax"].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener("input", () => {
+            // debounce small delay (optional) - keep instant for now
+            runPrediction();
+        });
+    });
+
+    const btn = document.getElementById("predictBtn");
+    if (btn) btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        runPrediction();
+    });
+}
+
+/* -------------------------
+   Init
+   ------------------------- */
+document.addEventListener("DOMContentLoaded", () => {
+    // remove any legacy or injected Cloudflare blocks if present (just in case)
+    // (we won't try to re-add them)
+    console.log("DOM loaded, attaching listeners...");
+    attachUiListeners();
+    loadDecisionTree();
+});

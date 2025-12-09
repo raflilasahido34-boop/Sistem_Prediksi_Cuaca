@@ -75,11 +75,16 @@
                     <input id="tmin" type="number" value="23" step="0.1" class="mt-1 w-full p-2 rounded-lg border focus:ring-2 focus:ring-blue-400" />
                 </div>
                 <div>
+                    <label class="font-semibold">Suhu Maksimum (tmax)</label>
+                    <input id="tmax" type="number" value="32" step="0.1"
+                        class="mt-1 w-full p-2 rounded-lg border focus:ring-2 focus:ring-blue-400" />
+                </div>
+                <div>
                     <label class="font-semibold">Kecepatan Angin (wspd)</label>
                     <input id="wspd" type="number" value="18" step="0.1" class="mt-1 w-full p-2 rounded-lg border focus:ring-2 focus:ring-blue-400" />
                 </div>
                 <div class="md:col-span-3 text-center">
-                    <button id="predictBtn" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl shadow-lg transition">Prediksi</button>
+                    <button type="button" id="predictBtn" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl shadow-lg transition">Prediksi</button>
                 </div>
             </div>
         </section>
@@ -90,7 +95,7 @@
     </div>
 
     <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script src="<?= base_url('/js/script.js') ?>"></script>
+    <script src="<?= base_url('/js/script.js') ?>" defer></script>
 </body>
 
 </html>

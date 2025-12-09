@@ -1,56 +1,56 @@
 {
-    "feature": "tmin",
-    "threshold": 21.75,
-    "gain_ratio": 0.30028832245140014,
+    "feature": "wspd",
+    "threshold": 25.200000000000003,
+    "gain_ratio": 0.2979307698329253,
     "left": {
-        "label": 0
-    },
-    "right": {
-        "feature": "wspd",
-        "threshold": 28.7,
-        "gain_ratio": 0.3041124209848895,
+        "feature": "tavg",
+        "threshold": 30.6,
+        "gain_ratio": 0.2590093467885321,
         "left": {
-            "feature": "wspd",
-            "threshold": 20.95,
-            "gain_ratio": 0.2728552922648732,
+            "feature": "tmin",
+            "threshold": 19.7,
+            "gain_ratio": 0.25966679343112936,
             "left": {
+                "label": 0
+            },
+            "right": {
                 "feature": "tmin",
-                "threshold": 23.35,
-                "gain_ratio": 0.09276432923568798,
+                "threshold": 21.55,
+                "gain_ratio": 0.20377311665384423,
                 "left": {
-                    "feature": "tavg",
-                    "threshold": 26.549999999999997,
-                    "gain_ratio": 0.3820083318411351,
-                    "left": {
-                        "label": 1
-                    },
-                    "right": {
-                        "label": 0
-                    }
+                    "label": 0
                 },
                 "right": {
-                    "feature": "wspd",
-                    "threshold": 18.8,
-                    "gain_ratio": 0.11759417559420784,
+                    "feature": "tmax",
+                    "threshold": 36.0,
+                    "gain_ratio": 0.19457171671632864,
                     "left": {
-                        "feature": "tavg",
-                        "threshold": 28.25,
-                        "gain_ratio": 0.0711547037846941,
+                        "feature": "wspd",
+                        "threshold": 22.75,
+                        "gain_ratio": 0.16679904441102492,
                         "left": {
                             "label": 1
                         },
                         "right": {
-                            "label": 1
+                            "label": 0
                         }
                     },
                     "right": {
                         "label": 0
                     }
                 }
-            },
-            "right": {
-                "label": 0
             }
+        },
+        "right": {
+            "label": 0
+        }
+    },
+    "right": {
+        "feature": "tmax",
+        "threshold": 30.65,
+        "gain_ratio": 0.372607182755641,
+        "left": {
+            "label": 0
         },
         "right": {
             "label": 0
