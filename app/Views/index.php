@@ -49,20 +49,12 @@
 
                 <div class="mt-6 grid grid-cols-2 gap-4 text-sm">
                     <div class="p-3 bg-white rounded-xl shadow text-center">
-                        <p class="font-semibold">Humidity</p>
-                        <p id="card_humidity">75%</p>
-                    </div>
-                    <div class="p-3 bg-white rounded-xl shadow text-center">
                         <p class="font-semibold">Wind Speed</p>
                         <p id="card_windSpeed">12 km/h</p>
                     </div>
                     <div class="p-3 bg-white rounded-xl shadow text-center">
-                        <p class="font-semibold">Pressure</p>
-                        <p id="card_pressure">1013 hPa</p>
-                    </div>
-                    <div class="p-3 bg-white rounded-xl shadow text-center">
-                        <p class="font-semibold">Visibility</p>
-                        <p id="card_visibility">10 km</p>
+                        <p class="font-semibold">Humidity</p>
+                        <p id="card_humidity">75%</p>
                     </div>
                 </div>
             </div>
@@ -90,36 +82,9 @@
                 </div>
 
                 <div>
-                    <label class="font-semibold">Suhu Rata-Rata (tavg)</label>
-                    <input id="tavg" type="number" value="27" step="0.1" class="mt-1 w-full p-2 rounded-lg border focus:ring-2 focus:ring-blue-400" />
-                </div>
-                <div>
-                    <label class="font-semibold">Suhu Minimum (tmin)</label>
-                    <input id="tmin" type="number" value="23" step="0.1" class="mt-1 w-full p-2 rounded-lg border focus:ring-2 focus:ring-blue-400" />
-                </div>
-                <div>
-                    <label class="font-semibold">Suhu Maksimum (tmax)</label>
-                    <input id="tmax" type="number" value="32" step="0.1" class="mt-1 w-full p-2 rounded-lg border focus:ring-2 focus:ring-blue-400" />
-                </div>
-                <div>
-                    <label class="font-semibold">Kecepatan Angin (wspd)</label>
-                    <input id="wspd" type="number" value="18" step="0.1" class="mt-1 w-full p-2 rounded-lg border focus:ring-2 focus:ring-blue-400" />
-                </div>
-                <div>
-                    <label class="font-semibold">Kelembaban (rhum)</label>
-                    <input id="rhum" type="number" value="75" step="0.1" class="mt-1 w-full p-2 rounded-lg border focus:ring-2 focus:ring-blue-400" />
-                </div>
-                <div>
-                    <label class="font-semibold">Visibilitas (visibility)</label>
-                    <input id="visibility" type="number" value="10" step="0.1" class="mt-1 w-full p-2 rounded-lg border focus:ring-2 focus:ring-blue-400" />
-                </div>
-                <div>
-                    <label class="font-semibold">Tekanan (pressure)</label>
-                    <input id="pressure" type="number" value="1013" step="0.1" class="mt-1 w-full p-2 rounded-lg border focus:ring-2 focus:ring-blue-400" />
-                </div>
-
-                <div class="md:col-span-3 text-center">
-                    <button type="button" id="predictBtn" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl shadow-lg transition">Prediksi</button>
+                    <label class="font-semibold">Tanggal Prediksi</label>
+                    <input type="date" id="prediction_date"
+                        class="mt-1 w-full p-2 rounded-lg border focus:ring-2 focus:ring-blue-400">
                 </div>
             </div>
         </section>

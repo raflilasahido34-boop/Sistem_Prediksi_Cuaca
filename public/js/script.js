@@ -179,6 +179,57 @@ function drawTree(data) {
     d3data = data;
 }
 
+async function fetchForecastByDate(date) {
+    const lat = 0.5417;
+    const lon = 123.0568;
+
+    const url = `https://api.open-meteo.com/v1/forecast?` +
+        `latitude=${lat}&longitude=${lon}` +
+        `&daily=temperature_2m_max,temperature_2m_min,windspeed_10m_max,relative_humidity_2m_max` +
+        `&timezone=Asia/Jakarta`;
+
+    const res = await fetch(url);
+    const data = await res.json();
+
+    const idx = data.daily.time.indexOf(date);
+    if (idx === -1) throw new Error("Tanggal tidak tersedia");
+
+    const tmin = data.daily.temperature_2m_min[idx];
+    const tmax = data.daily.temperature_2m_max[idx];
+    const wspd = data.daily.windspeed_10m_max[idx];
+    const rhum = data.daily.relative_humidity_2m_max[idx];
+    const tavg = (tmin + tmax) / 2;
+
+    return { tmin, tmax, tavg, wspd, rhum };
+}
+
+async function predictFromDate() {
+    const date = document.getElementById("prediction_date").value;
+    if (!date) return;
+
+    try {
+        const input = await fetchForecastByDate(date);
+
+        // // isi input tersembunyi (optional)
+        // document.getElementById("tmin").value = input.tmin;
+        // document.getElementById("tmax").value = input.tmax;
+        // document.getElementById("tavg").value = input.tavg;
+        // document.getElementById("wspd").value = input.wspd;
+
+        const { result, path } = predictFromTree(decisionTree, input);
+
+        updateWeatherCard(input, result);
+        document.getElementById("prediksi_result").innerText = result;
+        highlightDecisionPath(path);
+
+    } catch (err) {
+        document.getElementById("prediksi_result").innerText =
+            "Data cuaca tidak tersedia";
+        console.error(err);
+    }
+}
+
+
 /* -------------------------
    Highlight functions
    - highlights rect + text fill for nodes on path
@@ -283,10 +334,10 @@ function updateWeatherCard(input, result) {
     }
 
     // humidity
-    const rhum = parseFloat(document.getElementById("rhum")?.value);
+
     const humEl = document.getElementById("card_humidity");
-    if (humEl && !isNaN(rhum)) {
-        humEl.innerText = `${rhum}%`;
+    if (humEl && !isNaN(input.rhum)) {
+        humEl.innerText = `${input.rhum}%`;
     }
 
     // wind
@@ -429,6 +480,8 @@ function attachUiListeners() {
         runPrediction();
     });
 }
+document.getElementById("prediction_date")
+    ?.addEventListener("change", predictFromDate);
 
 /* -------------------------
    Init
