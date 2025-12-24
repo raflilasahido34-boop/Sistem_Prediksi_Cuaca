@@ -255,3 +255,32 @@ body {
 @view-transition {
     navigation: auto;
 }
+#treeCanvas {
+    width: 100%;
+    height: auto;
+}
+
+.node rect {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.link {
+    opacity: 0.85;
+}
+
+.node:hover rect {
+    stroke: #fff;
+    stroke-width: 2;
+}
+.branch-label {
+    background: white;
+    pointer-events: none;
+}
+.node rect {
+    transition: all 0.3s ease;
+}
+
+.link {
+    transition: stroke 0.3s ease, stroke-width 0.3s ease;
+}

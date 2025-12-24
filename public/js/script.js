@@ -86,97 +86,143 @@ function convertToD3Format(node) {
 function drawTree(data) {
     if (!data) return;
 
-    const width = 900;
-    const height = 450;
-
-    // clear svg and build base group
-    const svg = d3.select("#treeCanvas")
-        .attr("viewBox", `0 0 ${width} ${height}`)
+    const svgEl = d3.select("#treeCanvas")
         .html("")
-        .append("g")
-        .attr("transform", "translate(40,40)");
+        .attr("preserveAspectRatio", "xMidYMid meet");
+
+    const g = svgEl.append("g");
 
     const root = d3.hierarchy(data);
 
-    const treeLayout = d3.tree().size([height - 80, width - 120]);
+    const treeLayout = d3.tree()
+        .nodeSize([90, 260])
+        .separation((a, b) => a.parent === b.parent ? 1.6 : 2.4);
+
     treeLayout(root);
 
-    // links (lines)
-    svg.selectAll("line.link")
+    const allNodes = root.descendants();
+
+    // hitung batas tree
+    const minX = d3.min(allNodes, d => d.x);
+    const maxX = d3.max(allNodes, d => d.x);
+    const minY = d3.min(allNodes, d => d.y);
+    const maxY = d3.max(allNodes, d => d.y);
+
+    const paddingX = 140;
+    const paddingY = 100;
+
+    const viewWidth = maxY - minY + paddingX * 2;
+    const viewHeight = maxX - minX + paddingY * 2;
+    const gLinks = g.append("g").attr("class", "links");
+    const gNodes = g.append("g").attr("class", "nodes");
+    // ⬅️ INI KUNCI UTAMA (ANTI KEPOTONG)
+    svgEl.attr(
+        "viewBox",
+        `${minY - paddingX} ${minX - paddingY} ${viewWidth} ${viewHeight}`
+    );
+            /* ===== BRANCH LABELS ===== */
+    const linkGen = d3.linkHorizontal()
+        .x(d => d.y)
+        .y(d => d.x);
+    /* ===== SHADOW ===== */
+    const defs = g.append("defs");
+    defs.append("filter")
+        .attr("id", "shadow")
+        .append("feDropShadow")
+        .attr("dx", 0)
+        .attr("dy", 4)
+        .attr("stdDeviation", 6)
+        .attr("flood-opacity", 0.25);
+
+    g.selectAll(".link")
         .data(root.links())
         .enter()
-        .append("line")
-        .classed("link", true)
-        .attr("x1", d => d.source.y)
-        .attr("y1", d => d.source.x)
-        .attr("x2", d => d.target.y)
-        .attr("y2", d => d.target.x)
-        .attr("stroke", "#c7d2fe")
-        .attr("stroke-width", 2)
+        .append("path")
+        .attr("class", "link")
+        .attr("d", linkGen)
         .attr("fill", "none")
-        .attr("id", d => `link-${d.source.data.__uid}-${d.target.data.__uid}`);
+        .attr("stroke", "#c7d2fe")
+        .attr("stroke-width", 2.2);
 
-    // nodes
-    const nodes = svg.selectAll("g.node")
-        .data(root.descendants())
+    /* ===== NODES ===== */
+    const nodeGroup = gNodes.selectAll(".node")
+        .data(allNodes)
         .enter()
         .append("g")
-        .classed("node", true)
+        .attr("class", "node")
         .attr("transform", d => `translate(${d.y},${d.x})`);
 
-    // give each group an id based on uid
-    nodes.attr("id", d => `node-${d.data.__uid}`);
 
-    // rect background for each node
-    nodes.append("rect")
-        .attr("x", -70)
-        .attr("y", -22)
-        .attr("rx", 10)
-        .attr("ry", 10)
-        .attr("width", 140)
-        .attr("height", 44)
-        .attr("fill", d => {
-            // decision internal nodes have children in d3
-            if (d.children) return "#6366f1";
-            // leaf node: color by label if available
-            return d.data.label === 1 ? "#16a34a" : "#dc2626";
-        })
-        .attr("stroke", "#fff")
-        .attr("stroke-width", 1.5);
 
-    // text
-    nodes.append("text")
+    nodeGroup.append("rect")
+        .attr("x", -85)
+        .attr("y", -30)
+        .attr("width", 170)
+        .attr("height", 60)
+        .attr("rx", 12)
+        .attr("ry", 12)
+        .attr("filter", "url(#shadow)")
+        .attr("fill", d =>
+            d.children
+                ? "#6366f1"
+                : d.data.label === 1 ? "#16a34a" : "#dc2626"
+        );
+        
+    nodeGroup.append("text")
         .attr("text-anchor", "middle")
         .attr("fill", "white")
-        .style("font-size", "11px")
-        .style("font-weight", "bold")
+        .style("font-size", "12px")
+        .style("font-weight", "600")
         .each(function (d) {
-            const text = d3.select(this);
-
+            const t = d3.select(this);
             if (d.data.feature) {
-                const label = featureLabelMap[d.data.feature] || d.data.feature;
-
-                text.append("tspan")
+                t.append("tspan")
                     .attr("x", 0)
-                    .attr("dy", "-0.3em")
-                    .text(label);
+                    .attr("dy", "-0.2em")
+                    .text(featureLabelMap[d.data.feature] || d.data.feature);
 
-                // threshold may be undefined for some nodes (safety)
-                if (d.data.threshold !== undefined && d.data.threshold !== null && !isNaN(d.data.threshold)) {
-                    text.append("tspan")
+                if (!isNaN(d.data.threshold)) {
+                    t.append("tspan")
                         .attr("x", 0)
-                        .attr("dy", "1.2em")
-                        .style("font-weight", "normal")
+                        .attr("dy", "1.3em")
+                        .style("font-weight", "400")
                         .text(`≤ ${Number(d.data.threshold).toFixed(2)}`);
                 }
             } else {
-                // leaf label
-                text.text(d.data.label === 1 ? "HUJAN" : "TIDAK HUJAN");
+                t.text(d.data.label === 1 ? "HUJAN 🌧️" : "TIDAK HUJAN ☀️");
             }
         });
+    
 
-    // store a reference to d3data (optional)
-    d3data = data;
+    const linkGroups = gLinks.selectAll(".link-group")
+        .data(root.links())
+        .enter()
+        .append("g")
+        .attr("class", "link-group");
+
+    // garis
+    linkGroups.append("path")
+        .attr("class", "link")
+        .attr("d", linkGen)
+        .attr("fill", "none")
+        .attr("stroke", "#c7d2fe")
+        .attr("stroke-width", 2.2);
+
+    // label YA / TIDAK
+    linkGroups.append("text")
+        .attr("class", "branch-label")
+        .attr("x", d => (d.source.y + d.target.y) / 2)
+        .attr("y", d => (d.source.x + d.target.x) / 2 - 6)
+        .attr("text-anchor", "middle")
+        .style("font-size", "11px")
+        .style("font-weight", "600")
+        .style("fill", "#4338ca")
+        .text(d => {
+            const idx = d.source.children.indexOf(d.target);
+            return idx === 0 ? "YA (≤)" : "TIDAK (>)";
+        });
+
+            
 }
 
 async function fetchForecastByDate(date) {
@@ -220,7 +266,7 @@ async function predictFromDate() {
 
         updateWeatherCard(input, result);
         document.getElementById("prediksi_result").innerText = result;
-        highlightDecisionPath(path);
+        highlightPath(path);
 
     } catch (err) {
         document.getElementById("prediksi_result").innerText =
@@ -252,31 +298,78 @@ function registerRawNodeUid(rawNode, d3Node) {
     rawNodeToUid.set(rawNode, d3Node.__uid);
 }
 
-function highlightDecisionPath(path) {
-    clearHighlights();
+function getDecisionPath(root, input) {
+    const pathNodes = [];
+    const pathLinks = [];
 
-    for (let raw of path) {
-        const uid = rawNodeToUid.get(raw);
-        if (!uid) continue;
+    let current = root;
 
-        // highlight node rect
+    while (current.children) {
+        pathNodes.push(current);
+
+        const feature = current.data.feature;
+        const threshold = current.data.threshold;
+        const value = input[feature];
+
+        const goLeft = value <= threshold;
+        const next = goLeft ? current.children[0] : current.children[1];
+
+        pathLinks.push({
+            source: current,
+            target: next
+        });
+
+        current = next;
+    }
+
+    pathNodes.push(current); // leaf
+    return { pathNodes, pathLinks };
+}
+
+
+function highlightPath(pathNodes) {
+    if (!Array.isArray(pathNodes)) {
+        console.warn("highlightPath: pathNodes bukan array", pathNodes);
+        return;
+    }
+
+    // reset semua node
+    d3.selectAll(".node rect")
+        .attr("stroke", "none");
+
+    // reset semua link
+    d3.selectAll(".link")
+        .attr("stroke", "#c7d2fe")
+        .attr("stroke-width", 2.2);
+
+    // highlight node
+    pathNodes.forEach(n => {
+        const uid = rawNodeToUid.get(n);
+        if (!uid) return;
+
         d3.select(`#node-${uid} rect`)
-            .transition().duration(150)
+            .attr("stroke", "#facc15")
+            .attr("stroke-width", 3);
+    });
+
+    // highlight link antar node
+    for (let i = 0; i < pathNodes.length - 1; i++) {
+        const srcUid = rawNodeToUid.get(pathNodes[i]);
+        const tgtUid = rawNodeToUid.get(pathNodes[i + 1]);
+
+        if (!srcUid || !tgtUid) continue;
+
+        d3.selectAll(".link")
+            .filter(d =>
+                d.source.data.__uid === srcUid &&
+                d.target.data.__uid === tgtUid
+            )
             .attr("stroke", "#facc15")
             .attr("stroke-width", 4);
-
-        // highlight link (if parent exists)
-        if (raw.parent) {
-            const pid = rawNodeToUid.get(raw.parent);
-            if (pid) {
-                d3.select(`#link-${pid}-${uid}`)
-                    .transition().duration(150)
-                    .attr("stroke", "#facc15")
-                    .attr("stroke-width", 4);
-            }
-        }
     }
 }
+
+
 
 
 /* -------------------------
@@ -456,7 +549,7 @@ function runPrediction() {
         result ?? "Tidak ada hasil";
     updateWeatherCard(input, result);
     // highlight node pada D3
-    highlightDecisionPath(path);
+    highlightPath(path);
 }
 
 

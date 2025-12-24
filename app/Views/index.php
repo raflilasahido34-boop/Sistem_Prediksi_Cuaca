@@ -38,40 +38,51 @@
             </div>
         </header>
 
-        <main class="p-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- Current Weather Card -->
-            <div class="p-6 bg-blue-50 rounded-2xl shadow-md">
-                <div class="flex flex-col items-center">
-                    <div class="text-6xl mb-2">⛅</div>
-                    <div class="text-4xl font-semibold" id="temperature">28°C</div>
-                    <div class="text-lg text-gray-700" id="weatherCondition">Partly Cloudy</div>
-                </div>
+        <main class="snap-y snap-mandatory overflow-y-auto h-screen">
 
-                <div class="mt-6 grid grid-cols-2 gap-4 text-sm">
-                    <div class="p-3 bg-white rounded-xl shadow text-center">
-                        <p class="font-semibold">Wind Speed</p>
-                        <p id="card_windSpeed">12 km/h</p>
+            <!-- Weather Card FULL SCREEN -->
+            <section class="snap-start min-h-screen flex items-center justify-center p-6 bg-gradient-to-b from-blue-100 to-blue-200">
+                <div class="w-full max-w-4xl bg-white rounded-3xl shadow-2xl p-8">
+
+                    <div class="flex flex-col items-center">
+                        <div class="text-7xl mb-4">⛅</div>
+                        <div class="text-5xl font-bold" id="temperature">-°C</div>
                     </div>
-                    <div class="p-3 bg-white rounded-xl shadow text-center">
-                        <p class="font-semibold">Humidity</p>
-                        <p id="card_humidity">75%</p>
+
+                    <div class="mt-10 grid grid-cols-2 gap-6 text-center">
+                        <div class="p-6 bg-blue-50 rounded-2xl shadow">
+                            <p class="font-semibold text-lg">Wind Speed</p>
+                            <p class="text-2xl mt-2" id="card_windSpeed">- km/h</p>
+                        </div>
+                        <div class="p-6 bg-blue-50 rounded-2xl shadow">
+                            <p class="font-semibold text-lg">Humidity</p>
+                            <p class="text-2xl mt-2" id="card_humidity">-%</p>
+                        </div>
                     </div>
-                </div>
-            </div>
 
-            <!-- Prediction Card -->
-            <div class="p-6 bg-blue-50 rounded-2xl shadow-md">
-                <h2 class="text-xl font-bold text-center mb-4" id="predictionTitle">Weather Prediction (C4.5 Algorithm)</h2>
-
-                <div class="border rounded-xl bg-white p-3 shadow">
-                    <svg id="treeCanvas" width="100%" height="350"></svg>
                 </div>
+            </section>
 
-                <div class="mt-5 p-4 bg-white rounded-xl shadow text-center">
-                    <p class="text-md font-semibold">24-Hour Prediction</p>
-                    <p class="text-3xl mt-2" id="prediksi_result">⛈️ Rainy</p>
+            <!-- Prediction Card FULL SCREEN -->
+            <section class="snap-start min-h-screen flex items-center justify-center p-6 bg-gradient-to-b from-white to-blue-100">
+                <div class="w-full max-w-6xl bg-white rounded-3xl shadow-2xl p-8">
+
+                    <h2 class="text-2xl font-bold text-center mb-6">
+                        Weather Prediction (C4.5 Algorithm)
+                    </h2>
+
+                    <div class="border rounded-2xl bg-gray-50 p-4 shadow-inner">
+                        <svg id="treeCanvas" width="100%" height="400"></svg>
+                    </div>
+
+                    <div class="mt-8 p-6 bg-blue-50 rounded-2xl shadow text-center">
+                        <p class="text-lg font-semibold">24-Hour Prediction</p>
+                        <p class="text-4xl mt-3 font-bold" id="prediksi_result">⛈️ Rainy</p>
+                    </div>
+
                 </div>
-            </div>
+            </section>
+
         </main>
 
         <!-- Input Form (Only for logged-in users) -->
@@ -90,7 +101,7 @@
         </section>
 
         <footer class="p-4 bg-blue-600 text-white text-center text-sm">
-            <p id="footerText">Data updated every 30 minutes • Powered by C4.5 Decision Tree Algorithm</p>
+            <p id="footerText">Data updated every you chose date • Powered by C4.5 Decision Tree Algorithm</p>
         </footer>
     </div>
 
